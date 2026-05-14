@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Transform: AWS::Serverless-2016-10-31
+Description: Security Hub Helper Test 1
+
+Resources:
+
+  # Security Hub: S3.2 CRITICAL — public bucket
+  InsecureS3Bucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub insecure-bucket-${AWS::AccountId}
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: false
+        BlockPublicPolicy: false
+        IgnorePublicAcls: false
+        RestrictPublicBuckets: false
+
+  InsecureS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref InsecureS3Bucket
+      PolicyDocument:
+        Statement:
+          - Effect: Allow
+            Principal: "*"
+            Action: s3:GetObject
+            Resource: !Sub arn:aws:s3:::insecure-test-${AWS::AccountId}/*
