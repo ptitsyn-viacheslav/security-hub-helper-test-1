@@ -8,7 +8,6 @@ region = "eu-central-1"
 s3_bucket = "security-hub-helper-deploy"
 s3_prefix = "security-hub-helper-test-1"
 capabilities = "CAPABILITY_NAMED_IAM"
-parameter_overrides = ""
 confirm_changeset = true
 profile = "my-dev"
 tags = "project=SecurityHubHelper repo=https://github.com/ptitsyn-viacheslav/security-hub-helper-test-1.git owner=SLAVA_TEAM"

@@ -24,4 +24,16 @@ Resources:
           - Effect: Allow
             Principal: "*"
             Action: s3:GetObject
-            Resource: !Sub arn:aws:s3:::insecure-test-${AWS::AccountId}/*
+            Resource: !Sub arn:aws:s3:::${InsecureS3Bucket}/*
+
+  # Security Hub: EC2.18 CRITICAL — security group open to the world on all ports
+  InsecureSecurityGroup:
+    Type: AWS::EC2::SecurityGroup
+    Properties:
+      GroupDescription: Insecure security group open to all traffic
+      SecurityGroupIngress:
+        - IpProtocol: "-1"
+          CidrIp: "0.0.0.0/0"
+        - IpProtocol: "-1"
+          CidrIpv6: "::/0"
+
