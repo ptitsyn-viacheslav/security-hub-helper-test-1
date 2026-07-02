@@ -2,6 +2,14 @@ AWSTemplateFormatVersion: "2010-09-09"
 Transform: AWS::Serverless-2016-10-31
 Description: Security Hub Helper Test 1
 
+Parameters:
+  VpcId:
+    Type: AWS::EC2::VPC::Id
+    Default: vpc-0bd64460490cb0402
+  SubnetIds:
+    Type: List<AWS::EC2::Subnet::Id>
+    Default: 'subnet-05389caa8e5330882,subnet-0f970e581feb5efed,subnet-031b2e35c3517be96'
+
 Resources:
 
   # Security Hub: S3.2 CRITICAL — public bucket
@@ -30,10 +38,26 @@ Resources:
   InsecureSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
-      GroupDescription: Insecure security group open to all traffic
+      VpcId: !Ref VpcId
+      GroupDescription: Insecure security group open to all traffic (9)
       SecurityGroupIngress:
         - IpProtocol: "-1"
           CidrIp: "0.0.0.0/0"
         - IpProtocol: "-1"
           CidrIpv6: "::/0"
+      SecurityGroupEgress:
+        - IpProtocol: "-1"
+          CidrIp: "0.0.0.0/0"
 
+  InsecureLambdaFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Runtime: python3.12
+      Handler: index.handler
+      InlineCode: |
+        def handler(event, context):
+            return {"statusCode": 200, "body": "Hello from insecure Lambda"}
+      VpcConfig:
+        SecurityGroupIds:
+          - !Ref InsecureSecurityGroup
+        SubnetIds: !Ref SubnetIds
